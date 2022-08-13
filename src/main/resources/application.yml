@@ -22,6 +22,7 @@ spring:
     username: jeonghoonb
     password: jeonghoonb12#$
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     defer-datasource-initialization: true #test용 database init data (resources > data.sql)
     hibernate:
@@ -31,9 +32,7 @@ spring:
       hibernate:
         format_sql: true  #sql query log format
         default_batch_fetch_size: 100 #jpa bulk select
-  h2:
-    console:
-      enabled: true #h2 web console 활성화
+
   sql:
     init:
       mode: always  #resources > data.sql init 시점(NEVER, EMBEDED, ALWAYS)
