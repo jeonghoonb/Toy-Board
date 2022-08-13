@@ -37,10 +37,3 @@ spring:
   sql:
     init:
       mode: always  #resources > data.sql init 시점(NEVER, EMBEDED, ALWAYS)
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: testdb
