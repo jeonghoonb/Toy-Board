@@ -1,0 +1,46 @@
+#debug log 활성화 설정, 즉 logback이 debug log를 찍을지 여부 => 너무 잡다한게 많아서 false 처리
+debug: false
+
+#spring actuator endpoint 활성화 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# log별 mode 설정
+logging:
+  level:
+    com.tot.mvcboard: debug
+    org.springframework.web.servlet: debug # request, response log
+    org.hibernate.type.descriptor.sql.BasicBinder: trace  # jpa query log
+
+#DB 설정
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/board
+    username: jeonghoonb
+    password: jeonghoonb12#$
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    defer-datasource-initialization: true #test용 database init data (resources > data.sql)
+    hibernate:
+      ddl-auto: create  #entity를 이용하여 create table ddl 생성
+    show-sql: true  #sql query log
+    properties: #jpa 구현체 (기본 구현체 hibernate)
+      hibernate:
+        format_sql: true  #sql query log format
+        default_batch_fetch_size: 100 #jpa bulk select
+  h2:
+    console:
+      enabled: true #h2 web console 활성화
+  sql:
+    init:
+      mode: always  #resources > data.sql init 시점(NEVER, EMBEDED, ALWAYS)
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: testdb
