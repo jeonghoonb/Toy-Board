@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.util.Set;
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class Article {
 
@@ -32,7 +34,7 @@ public class Article {
     @Setter @Column(nullable = false)
     private String title;
 
-    @Setter @Column(nullable = false)   // NOTE: nullabe default true 생략 가능
+    @Setter @Column(nullable = false, length = 10000)   // NOTE: nullabe default true 생략 가능
     private String content;
 
     @Setter
