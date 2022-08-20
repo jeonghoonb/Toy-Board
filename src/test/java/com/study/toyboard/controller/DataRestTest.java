@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test. web.servlet.result.MockMvcResultMatchers.status;
 
 @Disabled("Spring Data Rest가 자동으로 생성해주기에, 이 테스트 통합 테스트는 사실상 불필요. 그냥 스터디용도로 진행했기에 Disable")
 @DisplayName("Spring Data Rest 테스트")
