@@ -10,30 +10,28 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("View Controller 테스트")
+@DisplayName("Auth Test")
 @Import(SecutiryConfig.class)
-@WebMvcTest(ArticleController.class)
-class ArticleControllerTest {
+@WebMvcTest
+public class AuthControllerTest {
 
     private final MockMvc mvc;
 
-    // NOTE: TC에서는 @Autowired 생략 불가
-    public ArticleControllerTest(@Autowired MockMvc mvc) {
+    public AuthControllerTest(@Autowired MockMvc mvc) {
         this.mvc = mvc;
     }
 
-    @DisplayName("게시글 리스트 조회 테스트")
+    @DisplayName("로그인 페이지 테스트")
     @Test
-    void givenNothing_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
+    void givenNothing_whenTryingToLogin_thenReturnsLogInView() throws Exception {
         // given
 
         // when & then
-        mvc.perform(get("/articles"))
+        mvc.perform(get("/login"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("articles/index"))
-                .andExpect(model().attributeExists("articles"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
     }
 }
