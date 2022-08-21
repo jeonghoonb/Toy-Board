@@ -1,6 +1,6 @@
 # toy-board
 
-Toy Project : Simple Board Serviceㄱ
+Toy Project : Simple Board Service
 
 ## 개발 환경
 
