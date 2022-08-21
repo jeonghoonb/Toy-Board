@@ -34,8 +34,8 @@ public class SecutiryConfig {
                 )
                 .formLogin().and()
                 .logout()
-                .logoutSuccessUrl("/")
-                .and()
+                    .logoutSuccessUrl("/")
+                    .and()
                 .build();
     }
 
