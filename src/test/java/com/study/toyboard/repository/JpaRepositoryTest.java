@@ -1,21 +1,26 @@
 package com.study.toyboard.repository;
 
-import com.study.toyboard.config.JpaConfig;
 import com.study.toyboard.domain.Article;
+import com.study.toyboard.domain.UserAccount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("JPA 연결 테스트")
-@Import(JpaConfig.class)
+@Import(JpaRepositoryTest.TestJpaConfig.class)
 @DataJpaTest
-class ArticleRepositoryTest {
+class JpaRepositoryTest {
 
     /*
       JUnit5 이상은 test code에서도 생성자 주입 가능 (ref: https://velog.io/@nathan29849/JUnit-Test-%EA%B5%AC%EC%A1%B0)
@@ -28,85 +33,88 @@ class ArticleRepositoryTest {
 
      */
 
-    private ArticleRepository articleRepository;
-    private ArticleCommentRepository articleCommentRepository;
+    private final ArticleRepository articleRepository;
+    private final ArticleCommentRepository articleCommentRepository;
+    private final UserAccountRepository userAccountRepository;
 
-    public ArticleRepositoryTest(
+    JpaRepositoryTest(
             @Autowired ArticleRepository articleRepository,
-            @Autowired ArticleCommentRepository articleCommentRepository
+            @Autowired ArticleCommentRepository articleCommentRepository,
+            @Autowired UserAccountRepository userAccountRepository
     ) {
         this.articleRepository = articleRepository;
         this.articleCommentRepository = articleCommentRepository;
+        this.userAccountRepository = userAccountRepository;
     }
 
-    @DisplayName("Select 테스트")
+    @DisplayName("select 테스트")
     @Test
     void givenTestData_whenSelecting_thenWorksFine() {
+        // Given
 
-        // given
-        // NOTE: data.sql 에 test dumy data 추가 (https://www.mockaroo.com)
-
-        // when
+        // When
         List<Article> articles = articleRepository.findAll();
 
-        // then
+        // Then
         assertThat(articles)
                 .isNotNull()
                 .hasSize(100);
     }
 
-    @DisplayName("Insert 테스트")
+    @DisplayName("insert 테스트")
     @Test
     void givenTestData_whenInserting_thenWorksFine() {
-
-        // given
+        // Given
         long previousCount = articleRepository.count();
+        UserAccount userAccount = userAccountRepository.save(UserAccount.of("newJeonghoonb", "pw", null, null, null));
+        Article article = Article.of(userAccount, "new article", "new content", "#newTag");
 
-        // when
-        articleRepository.save(Article.of("Insert Test Title", "Insert Test Content", "#InsertTestHashtag"));
+        // When
+        articleRepository.save(article);
 
-        // then
-        assertThat(articleRepository.count())
-                .isEqualTo(previousCount + 1);
+        // Then
+        assertThat(articleRepository.count()).isEqualTo(previousCount + 1);
     }
 
-    @DisplayName("Update 테스트")
+    @DisplayName("update 테스트")
     @Test
     void givenTestData_whenUpdating_thenWorksFine() {
-
-        // given
+        // Given
         Article article = articleRepository.findById(1L).orElseThrow();
-        String updatedHashtag = "#UpdatedHahshtag";
+        String updatedHashtag = "#springboot";
         article.setHashtag(updatedHashtag);
 
-        // when
-//        Article savedArticle = articleRepository.save(article);
+        // When
         Article savedArticle = articleRepository.saveAndFlush(article);
 
-        // then
-        assertThat(savedArticle)
-                .hasFieldOrPropertyWithValue("hashtag", updatedHashtag);
+        // Then
+        assertThat(savedArticle).hasFieldOrPropertyWithValue("hashtag", updatedHashtag);
     }
 
-    @DisplayName("Delete 테스트")
+    @DisplayName("delete 테스트")
     @Test
     void givenTestData_whenDeleting_thenWorksFine() {
-
-        // given
+        // Given
         Article article = articleRepository.findById(1L).orElseThrow();
         long previousArticleCount = articleRepository.count();
         long previousArticleCommentCount = articleCommentRepository.count();
-        int deletedCommentSize = article.getArticleComments().size();
+        int deletedCommentsSize = article.getArticleComments().size();
 
-        // when
+        // When
         articleRepository.delete(article);
 
-        // then
-        assertThat(articleRepository.count())
-                .isEqualTo(previousArticleCount - 1);
-
-        assertThat(articleCommentRepository.count())
-                .isEqualTo(previousArticleCommentCount - deletedCommentSize);
+        // Then
+        assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 1);
+        assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - deletedCommentsSize);
     }
 
+
+    @EnableJpaAuditing
+    @TestConfiguration
+    static class TestJpaConfig {
+        @Bean
+        AuditorAware<String> auditorAware() {
+            return () -> Optional.of("jeonghoonb");
+        }
+    }
 }
